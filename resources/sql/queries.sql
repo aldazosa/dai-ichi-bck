@@ -19,3 +19,7 @@ WHERE id = :id
 -- :doc deletes a user record given the id
 DELETE FROM users
 WHERE id = :id
+
+-- :name users :? :*
+-- :doc returns all users
+SELECT * FROM users ORDER BY id

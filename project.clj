@@ -1,4 +1,4 @@
-(defproject dai-ichi "0.1.0"
+(defproject dai-ichi "0.2.0"
 
   :description "FIXME: write description"
   :url "http://example.com/FIXME"

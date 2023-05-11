@@ -46,7 +46,28 @@
 (rf/reg-event-fx
   :page/init-home
   (fn [_ _]
-    {:dispatch [:fetch-docs]}))
+    {:fx [[:dispatch [:fetch-docs]]
+          [:dispatch [:fetch-users]]]}))
+
+(rf/reg-event-db
+  :set-users
+  (fn [db [_ users]]
+    (assoc db :users users)))
+
+(rf/reg-event-db
+  :error
+  (fn [db [_ _]]
+    (assoc db :error true)))
+
+(rf/reg-event-fx
+ :fetch-users
+ (fn [_ _]
+   {:http-xhrio {:method          :get
+                 :uri             "/users"
+                 :timeout         8000
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success      [:set-users]
+                 :on-failure      [:error]}}))
 
 ;;subscriptions
 
@@ -76,3 +97,8 @@
   :common/error
   (fn [db _]
     (:common/error db)))
+
+(rf/reg-sub
+  :dai-ichi/users
+  (fn [db _]
+    (:users db)))
