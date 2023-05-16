@@ -3,7 +3,7 @@
    [dai-ichi.db.core :refer [*db*] :as db]
    [java-time.pre-java8]
    [luminus-migrations.core :as migrations]
-   [clojure.test :refer :all]
+   [clojure.test :refer [deftest is use-fixtures]]
    [next.jdbc :as jdbc]
    [dai-ichi.config :refer [env]]
    [mount.core :as mount]))

@@ -4,14 +4,13 @@
     [reagent.dom :as rdom]
     [reagent.core :as r]
     [re-frame.core :as rf]
-    [goog.events :as events]
-    [goog.history.EventType :as HistoryEventType]
-    [markdown.core :refer [md->html]]
+    [goog.events]
+    [goog.history.EventType]
     [dai-ichi.ajax :as ajax]
     [dai-ichi.events]
     [reitit.core :as reitit]
-    [reitit.frontend.easy :as rfe]
-    [clojure.string :as string])
+    [reitit.frontend.easy :as rfe])
+  #_{:clj-kondo/ignore [:unused-import]}
   (:import goog.History))
 
 (defn nav-link [uri title page]
@@ -51,7 +50,7 @@
      [:p "No users"])])
 
 (defn page []
-  (if-let [page @(rf/subscribe [:common/page])]
+  (when-let [page @(rf/subscribe [:common/page])]
     [:div
      [navbar]
      [page]]))

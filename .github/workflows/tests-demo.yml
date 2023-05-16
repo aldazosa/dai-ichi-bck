@@ -1,0 +1,96 @@
+name: Continuous Integration
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on: [push]
+jobs:
+  test-clj:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: daiichi_user
+          POSTGRES_PASSWORD: foobar
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Clojure and Leiningen
+        uses: DeLaGuardo/setup-clojure@10.3
+        with:
+          lein: 2.9.1
+
+      - name: Cache clojure dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+          # List all files containing dependencies:
+          key: cljdeps-${{ hashFiles('project.clj') }}
+          restore-keys: cljdeps-
+
+      - name: Create database
+        run: |
+          PGPASSWORD=foobar psql -h localhost -U daiichi_user -c "CREATE DATABASE daiichi_db"
+
+      - name: Set up DATABASE_URL
+        run: echo "DATABASE_URL=postgresql://localhost:5432/daiichi_db?user=daiichi_user&password=foobar" >> $GITHUB_ENV
+
+      - name: Run Leiningen tests
+        run: lein test
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install clj-kondo
+      uses: DeLaGuardo/setup-clojure@10.3
+      with:
+          clj-kondo: 2023.04.14
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Lint
+      run: clj-kondo --lint src test --config '{:output {:pattern "::{{level}} file={{filename}},line={{row}},col={{col}}::{{message}}"}}'
+
+  test-cljs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Clojure and Leiningen
+        uses: DeLaGuardo/setup-clojure@10.3
+        with:
+          lein: 2.9.1
+
+      - name: Cache clojure and node dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+            **/node_modules
+          key: cljsdeps-${{ hashFiles('project.clj', 'package.json') }}
+          restore-keys: cljsdeps-
+
+      - name: Download Node deps
+        run: npm install
+
+      - name: Run cljs tests
+        run: npx shadow-cljs compile test
