@@ -1,11 +1,12 @@
 (ns dai-ichi.handler-test
   (:require
-    [clojure.test :refer :all]
-    [ring.mock.request :refer :all]
-    [dai-ichi.handler :refer :all]
-    [dai-ichi.middleware.formats :as formats]
-    [muuntaja.core :as m]
-    [mount.core :as mount]))
+   [clojure.test :refer [deftest is testing use-fixtures]]
+   [ring.mock.request :refer [request]]
+   [dai-ichi.config]
+   [dai-ichi.handler :refer [app]]
+   [dai-ichi.middleware.formats :as formats]
+   [muuntaja.core :as m]
+   [mount.core :as mount]))
 
 (defn parse-json [body]
   (m/decode formats/instance "application/json" body))

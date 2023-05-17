@@ -1,0 +1,8 @@
+{:lint-as       {mount.core/defstate              clojure.core/def
+                 reagent.core/with-let            clojure.core/let
+                 reagent-mui.util/react-component clojure.core/fn}
+ :linters       {:unresolved-var {:exclude [dai-ichi.db.core]}
+                 :unused-binding {:level                                :warning
+                                  :exclude-destructured-keys-in-fn-args true
+                                  :exclude-destructured-as              true}}
+ :skip-comments true}

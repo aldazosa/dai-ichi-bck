@@ -1,2 +1,1 @@
-(ns dai-ichi.validation
-  (:require [struct.core :as st]))
+(ns dai-ichi.validation)

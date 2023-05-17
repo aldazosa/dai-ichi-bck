@@ -6,11 +6,9 @@
     [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
     [dai-ichi.middleware.formats :as formats]
     [muuntaja.middleware :refer [wrap-format wrap-params]]
-    [dai-ichi.config :refer [env]]
     [ring.middleware.flash :refer [wrap-flash]]
     [ring.adapter.undertow.middleware.session :refer [wrap-session]]
-    [ring.middleware.defaults :refer [site-defaults wrap-defaults]])
-  )
+    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]))
 
 (defn wrap-internal-error [handler]
   (let [error-result (fn [^Throwable t]
@@ -55,5 +53,3 @@
             (assoc-in [:security :anti-forgery] false)
             (dissoc :session)))
       wrap-internal-error))
-
-
