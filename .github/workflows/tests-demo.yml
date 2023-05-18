@@ -1,5 +1,4 @@
-name: Continuous Integration
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: 'Continuous Integration'
 on: [push]
 jobs:
   test-clj:
