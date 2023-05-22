@@ -1,5 +1,4 @@
 name: 'review'
-
 on:
   # onl run this workflow on pull request events
   pull_request
