@@ -28,4 +28,5 @@ jobs:
       - name: Push to dokku
         run: |
           git remote add dokku dokku@dokku.aldazosa.net:dai-ichi-${{ github.event.pull_request.number }}
+          git checkout ${{ github.event.pull_request.head.ref }}
           git push dokku ${{ github.event.pull_request.head.ref }}:master
