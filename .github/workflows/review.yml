@@ -14,25 +14,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push to dokku
-        uses: dokku/github-action@master
+      - name: Set up Dokku SSH key
+        uses: webfactory/ssh-agent@v0.6.0
         with:
-          # create a review app
-          command: review-apps:create
-          git_remote_url: 'ssh://dokku@dokku.aldazosa.net:22/dai-ichi'
-          review_app_name: dai-ichi-${{ github.event.pull_request.number }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-  destroy_review_app:
-    runs-on: ubuntu-latest
-    # only run when a pull request is closed
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    steps:
-      - name: Destroy the review app
-        uses: dokku/github-action@master
-        with:
-          # destroy a review app
-          command: review-apps:destroy
-          git_remote_url: 'ssh://dokku@dokku.aldazosa.net:22/dai-ichi'
-          review_app_name: dai-ichi-${{ github.event.pull_request.number }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Create review app and database
+        run: |
+          ssh -o StrictHostKeyChecking=no dokku@dokku.aldazosa.net apps:create dai-ichi-${{ github.event.pull_request.number }}
+          ssh -o StrictHostKeyChecking=no dokku@dokku.aldazosa.net postgres:create dai-ichi-${{ github.event.pull_request.number }}-db
+          ssh -o StrictHostKeyChecking=no dokku@dokku.aldazosa.net postgres:link dai-ichi-${{ github.event.pull_request.number }}-db dai-ichi-${{ github.event.pull_request.number }}
+
+      - name: Push to dokku
+        run: |
+          git remote add dokku dokku@dokku.aldazosa.net:dai-ichi-${{ github.event.pull_request.number }}
+          git push dokku ${{ github.event.pull_request.head.ref }}:master
